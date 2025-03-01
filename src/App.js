@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Container } from "react-bootstrap";
+import ItemForm from "./components/ItemForm";
+import ItemList from "./components/ItemList";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-function App() {
+const App = () => {
+  const [items, setItems] = useState([]);
+
+  // Fetch items from the backend
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/items");
+        setItems(response.data);
+      } catch (error) {
+        console.error("Error fetching items:", error);
+      }
+    };
+    fetchItems();
+  }, []);
+
+  // Add a new item
+  const handleAddItem = (newItem) => {
+    setItems([...items, newItem]);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container className="mt-5">
+      <h1>Inventory Management System</h1>
+      <ItemForm onAddItem={handleAddItem} />
+      <h2 className="mt-5">Inventory Items</h2>
+      <ItemList items={items} />
+    </Container>
   );
-}
+};
 
 export default App;
